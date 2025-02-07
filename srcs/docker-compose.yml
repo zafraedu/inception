@@ -1,0 +1,10 @@
+version: '3'
+services:
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    volumes:
+      - ./nginx:/data/www:ro
+    ports:
+      - 8080:80
+    restart: always
