@@ -1,11 +1,28 @@
 version: '3'
 services:
   nginx:
-    container_name: nginx
     build: ./requirements/nginx
+    image: nginx
+    container_name: nginx
     env_file:
       - .env
     ports:
       - 443:443
-      # - 8080:80 test tools/index.html
     restart: always
+
+  wordpress:
+    build: ./requirements/wordpress
+    image: wordpress
+    container_name: wordpress
+    volumes:
+      - wp:/var/www/html
+    env_file:
+      - .env
+    restart: always
+
+volumes:
+  wp:
+   driver_opts:
+      type: 'none'
+      o: bind
+      device: /home/$USER/data/wordpress
