@@ -12,7 +12,6 @@ RUN openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
        -subj "/C=ES/ST=Malaga/L=Malaga/O=42 School/OU=ezafra-r/CN=ezafra-r/"
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
-COPY tools/index.html /var/www/html/index.html
 
 # the only port allowed
 EXPOSE 443
