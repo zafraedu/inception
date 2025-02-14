@@ -1,22 +1,45 @@
 services:
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+
   nginx:
     build: ./requirements/nginx
     image: nginx
     container_name: nginx
+    depends_on:
+      - wordpress
+    volumes:
+      - wp:/var/www/html
     env_file:
       - .env
     ports:
       - 443:443
+      - 80:80
+    networks:
+      - inception
     restart: always
 
   wordpress:
     build: ./requirements/wordpress
     image: wordpress
     container_name: wordpress
+    depends_on:
+      - db
     volumes:
       - wp:/var/www/html
     env_file:
       - .env
+    networks:
+      - inception
     restart: always
 
 volumes:
@@ -27,3 +50,8 @@ volumes:
       type: none
       o: bind
       device: /home/$USER/data/wordpress
+  db_data:
+
+networks:
+  inception:
+    name: inception
