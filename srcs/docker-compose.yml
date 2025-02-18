@@ -1,57 +1,52 @@
 services:
 
-  db:
-    image: mysql:5.7
-    volumes:
-      - db_data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
-
-
   nginx:
-    build: ./requirements/nginx
-    image: nginx
-    container_name: nginx
     depends_on:
       - wordpress
+    build: requirements/nginx/
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
-      - wp:/var/www/html
+      - "~/data/wordpress:/var/www/html"
+    networks:
+      - frontend
     env_file:
       - .env
-    ports:
-      - 443:443
-      - 80:80
-    networks:
-      - inception
     restart: always
 
   wordpress:
-    build: ./requirements/wordpress
+    depends_on:
+      - mariadb
+    build: requirements/wordpress/
     image: wordpress
     container_name: wordpress
-    depends_on:
-      - db
+    ports:
+      - "9000:9000"
     volumes:
-      - wp:/var/www/html
+      - "~/data/wordpress:/var/www/html"
+    networks:
+      - frontend
+      - backend
     env_file:
       - .env
-    networks:
-      - inception
     restart: always
 
-volumes:
-  wp:
-    name: wordpress
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/$USER/data/wordpress
-  db_data:
+  mariadb:
+    build: requirements/mariadb/
+    image: mariadb
+    container_name: mariadb
+    ports:
+      - "3306:3306"
+    volumes:
+      - "~/data/mariadb:/var/lib/mysql"
+    networks:
+      - backend
+    env_file:
+      - .env
+    restart: always
 
 networks:
-  inception:
-    name: inception
+  frontend:
+  backend:

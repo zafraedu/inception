@@ -1,31 +1,22 @@
 FROM debian:buster
 
-RUN apt-get update
-RUN apt-get -y install \
-	curl \
-	php-fpm \
-	php-mysql \
-	php-mbstring \
-	php-curl
+RUN apt update -y
+RUN apt install php-fpm php-mysql curl -y
+RUN rm -rf /var/lib/apt/lists/*
 
-#Create the folder to enable php start
+# static website
+COPY conf/index.html /tmp/index.html
+
+# install wordpress
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+  && chmod +x wp-cli.phar \
+  && mv wp-cli.phar /usr/local/bin/wp
+
 RUN mkdir /run/php
 
-# I need to install wp_cli command and put it in the right directory /usr/local/bin
-RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-RUN chmod +x wp-cli.phar
-RUN mv wp-cli.phar /usr/local/bin/wp
+WORKDIR /var/www/html/wordpress
 
-#we copy the script, give the right to launch it in local on our computer
-COPY ./tools/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+COPY tools/configure.sh /tmp/configure.sh
+ENTRYPOINT [ "sh", "/tmp/configure.sh" ]
 
-#We go the html directory
-WORKDIR /var/www/html/
-
-#We expose the 9000 port
-EXPOSE 9000
-
-#Launch PHP FPM in foreground and ignore deamonize from conf file (-F)
 CMD ["/usr/sbin/php-fpm7.3", "-F"]
