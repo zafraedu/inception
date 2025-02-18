@@ -16,7 +16,7 @@ RUN mkdir /run/php
 
 WORKDIR /var/www/html/wordpress
 
-COPY tools/configure.sh /tmp/configure.sh
-ENTRYPOINT [ "sh", "/tmp/configure.sh" ]
+COPY tools/entrypoint.sh /tmp/entrypoint.sh
+ENTRYPOINT [ "sh", "/tmp/entrypoint.sh" ]
 
 CMD ["/usr/sbin/php-fpm7.3", "-F"]
