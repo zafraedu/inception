@@ -9,7 +9,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - "~/data/wordpress:/var/www/html"
+      - "$HOME/data/wordpress:/var/www/html"
     networks:
       - frontend
     env_file:
@@ -25,7 +25,7 @@ services:
     ports:
       - "9000:9000"
     volumes:
-      - "~/data/wordpress:/var/www/html"
+      - "$HOME/data/wordpress:/var/www/html"
     networks:
       - frontend
       - backend
@@ -40,7 +40,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - "~/data/mariadb:/var/lib/mysql"
+      - "$HOME/data/mariadb:/var/lib/mysql"
     networks:
       - backend
     env_file:
