@@ -7,7 +7,15 @@ stop:
 	@docker compose -f srcs/docker-compose.yml down
 
 clean: stop
-	@ rm -rf /home/$USER/data
+	@ rm -rf $HOME/data
+
+fclean:
+	@docker stop $$(docker ps -qa);\
+	docker rm $$(docker ps -qa);\
+	docker rmi -f $$(docker images -qa);\
+	docker volume rm $$(docker volume ls -q);\
+	docker network rm $$(docker network ls -q);\
+
 
 prune: clean
 	@ docker system prune -f
